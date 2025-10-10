@@ -27,7 +27,7 @@ export const registerService = async (fullname, email, password, role) => new Pr
         })
 
         if (created) {
-            const token = jwt.sign({ id: user.id, email: user.email }, process.env.SECRET_KEY, { expiresIn: '1d' });
+            const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.SECRET_KEY, { expiresIn: '1d' });
             resolve({
                 err: 0,
                 msg: 'Register successfully!',
@@ -44,3 +44,61 @@ export const registerService = async (fullname, email, password, role) => new Pr
         reject(error)
     }
 });
+export const loginService = async (email, password) => new Promise(async (resolve, reject) => {
+    try {
+        const response = await db.User.findOne({ where: { email }, raw: true });
+        if (!response) {
+            return resolve({
+                err: 2,
+                msg: 'Email or password is incorrect!',
+                token: null
+            });
+        }
+        const isCorrectPassword = bcrypt.compareSync(password, response.password);
+        if (!isCorrectPassword) {
+            return resolve({
+                err: 2,
+                msg: 'Email or password is incorrect!',
+                token: null
+            });
+        }
+        if (response.isBlocked) {
+            return resolve({ err: 3, msg: 'Your account has been blocked!' });
+        }
+        const token = jwt.sign({ id: response.id, email: response.email, role: response.role }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        resolve({
+            err: 0,
+            msg: 'Login successfully!',
+            token
+        });
+    } catch (error) {
+        reject(error);
+    }
+});
+
+export const changePasswordService = async (userId, password, newPassword) => new Promise(async (resolve, reject) => {
+    try {
+        const user = await db.User.findOne({ where: { id: userId }, raw: true });
+        if (!user) {
+            return resolve({
+                err: 1,
+                msg: 'User not found!'
+            })
+        }
+        const isCorrectPassword = bcrypt.compareSync(password, user.password);
+        if (!isCorrectPassword) {
+            return resolve({
+                err: 2,
+                msg: 'Current password is incorrect!'
+            })
+        }
+        const hashNewPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(12));
+        await db.User.update({ password: hashNewPassword }, { where: { id: userId } });
+        resolve({
+            err: 0,
+            msg: 'Change password successfully!'
+        })
+    } catch (error) {
+        reject(error);
+    }
+})

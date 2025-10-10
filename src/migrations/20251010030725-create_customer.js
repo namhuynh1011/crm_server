@@ -2,40 +2,39 @@
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
-      id: {
+  async up (queryInterface, Sequelize) {
+    await queryInterface.createTable('customers', {
+      id:{
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      fullName: {
+      fullname: {
         type: Sequelize.STRING,
-        allowNull: true
+        allowNull: false
       },
       email: {
         type: Sequelize.STRING,
         allowNull: false,
         unique: true
       },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      role: {
-        type: Sequelize.ENUM('admin', 'manager', 'employee'),
-        allowNull: false,
-        defaultValue: 'employee'
-      },
-      avatar: {
+      phone: {
         type: Sequelize.STRING,
         allowNull: true
       },
-      isBlocked: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
+      address: {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
+      createdBy: { // nên là createdBy cho chuẩn tiếng Anh
+        type: Sequelize.UUID,
+        allowNull: false, 
+        references: {
+          model: 'users',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
       },
       createdAt: {
         allowNull: false,
@@ -47,12 +46,10 @@ module.exports = {
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
-    });
+    })
   },
 
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
-    // Xóa ENUM type trong Postgres nếu cần
-    await queryInterface.sequelize.query('DROP TYPE IF EXISTS "enum_users_role";');
+  async down (queryInterface, Sequelize) {
+    await queryInterface.dropTable('customers');
   }
 };
