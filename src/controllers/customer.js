@@ -67,3 +67,16 @@ export const getCustomerOfUserController = async (req, res) => {
         return res.status(500).json({ err: 3, msg: 'Failed to get customers of user: ' + error });
     }
 }
+
+export const searchCustomerByNameController = async (req, res) => {
+    const { name } = req.query;
+    try {
+        const result = await customerService.searchCustomerByNameService(name);
+        if (result.err) {
+            return res.status(400).json(result);
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ err: 3, msg: 'Failed to search customers: ' + error });
+    }
+}
