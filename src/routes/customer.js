@@ -9,4 +9,5 @@ router.delete('/delete_customer/:customerId', verifyToken, customerController.de
 router.get('/list_customers', verifyToken, customerController.listCustomersController);
 router.get('/customer_detail/:customerId', verifyToken, customerController.getCustomerDetailController);
 router.get('/my_customers', verifyToken, customerController.getCustomerOfUserController);
+router.get('/search', verifyToken, customerController.searchCustomerByNameController);
 export default router;
