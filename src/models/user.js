@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       User.hasMany(models.Customer, { foreignKey: 'createdBy', as: 'customers' });
+      User.hasMany(models.Contract, { foreignKey: 'user_id', as: 'contracts' });
     }
   }
   User.init({
