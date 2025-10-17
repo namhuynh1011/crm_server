@@ -1,0 +1,7 @@
+# ignore data and uploads so nodemon doesn't restart when files are written
+data/
+uploads/
+tmp/
+logs/
+*.log
+node_modules/

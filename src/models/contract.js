@@ -16,9 +16,6 @@ module.exports = (sequelize, DataTypes) => {
         end_date: DataTypes.DATE,
         status: DataTypes.ENUM('Draft', 'Pending', 'Active', 'Expired', 'Cancelled'),
         payment_terms: DataTypes.TEXT,
-        document_url: DataTypes.STRING,
-        document_hash: DataTypes.STRING,
-        blockchain_transaction_id: DataTypes.STRING,
         customer_id: DataTypes.UUID,
         user_id: DataTypes.UUID
     }, {

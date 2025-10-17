@@ -44,20 +44,6 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true
       },
-      document_url: {
-        type: Sequelize.STRING,
-        allowNull: true
-      },
-      document_hash: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        unique: true
-      },
-      blockchain_transaction_id: {
-        type: Sequelize.STRING,
-        allowNull: true,
-        unique: true
-      },
       customer_id: {
         type: Sequelize.UUID,
         allowNull: false,
