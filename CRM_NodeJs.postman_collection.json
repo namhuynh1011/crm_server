@@ -1,0 +1,510 @@
+{
+	"info": {
+		"_postman_id": "291bb943-bd8a-491c-b4e6-79b7ae91b8b1",
+		"name": "CRM_NodeJs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43591405",
+		"_collection_link": "https://nomerhomer.postman.co/workspace/Nomer-Homer's-Workspace~9c035ee1-d441-4ca1-81a0-5fe4aae0d86b/collection/43591405-291bb943-bd8a-491c-b4e6-79b7ae91b8b1?action=share&source=collection_link&creator=43591405"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Huỳnh Quốc Nam\",\r\n  \"email\": \"namhuynh@gmail.com\",\r\n  \"password\": \"12345678\",\r\n  \"role\": \"admin\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/auth/register",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"namhuynh@gmail.com\",\r\n  \"password\": \"12345678\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/auth/login",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Huỳnh Quốc Nam\",\r\n  \"email\": \"namhuynh@gmail.com\",\r\n  \"password\": \"12345678\",\r\n  \"role\": \"admin\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/user/getall",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"user",
+						"getall"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change Pass",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjA0MzkwMDcyLTI2MDgtNGNkNy1hZTg3LTJhMzExZjZkNmVhMiIsImVtYWlsIjoiaHV5bkBnbWFpbC5jb20iLCJpYXQiOjE3NTk5MDQ5NTEsImV4cCI6MTc1OTk5MTM1MX0.QpEGbAmJ1jiDV9yZTUZyl2EjwLbwJbS-C5jEUZ2HKhk",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"oldPassword\": \"12345678\",\r\n  \"newPassword\": \"nam101104\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/auth/change-password",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"auth",
+						"change-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get User",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Lock User",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3ODAzZjRhLTRlOWEtNDdiMS04ZDY2LWJjYWEwMDhlYmM5NyIsImVtYWlsIjoibmFtaHV5bmhAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYwMDY4NDI3LCJleHAiOjE3NjAxNTQ4Mjd9.zsxGhXBGY-eJrZKuqQMJBvF6taRHvfUI_37eKVtwTko",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{  \r\n    \"fullname\": \"Nhan Vien 2\",\r\n    \"email\": \"nv2@gmail.com\",\r\n    \"password\": \"12345678\",\r\n    \"role\": \"manager\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/user/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"user",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Profile",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjZTk2NDhlLTEwNTYtNGExZi1iYzNiLThjZDRjMzhmODc4NyIsImVtYWlsIjoibnYyQGdtYWlsLmNvbSIsInJvbGUiOiJtYW5hZ2VyIiwiaWF0IjoxNzYwMDY5OTM0LCJleHAiOjE3NjAxNTYzMzR9.VmrZZ5EQ8T5q80UiTy7qOFmfplY6vrX2RrLc-JDhnlw",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Test Update1\",\r\n  \"avatar\": \"test Update\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/user/update/profile",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"update",
+						"profile"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Customer",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY3NWI5YjZlLTUxZTYtNDQ5MS1hOGZmLWEyYTE0Yzc2YjU3ZSIsImVtYWlsIjoibmFtZW1wbG95ZWVAZ21haWwuY29tIiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzYwMDcxMzQ3LCJleHAiOjE3NjAxNTc3NDd9.3TApvfY2-CSAXmaCfqlEW_8CKG4Wwq4e9EeT3XxVdJI",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Nguyen Van C\",\r\n  \"email\": \"vanc@example.com\",\r\n  \"phone\": \"0123456789\",\r\n  \"address\": \"123 ABC Street\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/customer/create_customer",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"customer",
+						"create_customer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Customer",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Beare eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY3NWI5YjZlLTUxZTYtNDQ5MS1hOGZmLWEyYTE0Yzc2YjU3ZSIsImVtYWlsIjoibmFtZW1wbG95ZWVAZ21haWwuY29tIiwicm9sZSI6ImVtcGxveWVlIiwiaWF0IjoxNzYwMDcxMzQ3LCJleHAiOjE3NjAxNTc3NDd9.3TApvfY2-CSAXmaCfqlEW_8CKG4Wwq4e9EeT3XxVdJI",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/api/customer/delete_customer/5d31dcc2-c60a-468e-bd09-d0317dc3291f",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"customer",
+						"delete_customer",
+						"5d31dcc2-c60a-468e-bd09-d0317dc3291f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Customer",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3ODAzZjRhLTRlOWEtNDdiMS04ZDY2LWJjYWEwMDhlYmM5NyIsImVtYWlsIjoibmFtaHV5bmhAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYwMDcyMzM5LCJleHAiOjE3NjAxNTg3Mzl9.z3QWZYXp6BHPfrm4RN4nOtH36DRFV21XAe27qe9gdtY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Nguyen Van C\",\r\n  \"email\": \"vanc@example.com\",\r\n  \"phone\": \"0123456789\",\r\n  \"address\": \"123 ABC Street\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/customer/list_customers",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"customer",
+						"list_customers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Customer Detail",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3ODAzZjRhLTRlOWEtNDdiMS04ZDY2LWJjYWEwMDhlYmM5NyIsImVtYWlsIjoibmFtaHV5bmhAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYwMDcyMzM5LCJleHAiOjE3NjAxNTg3Mzl9.z3QWZYXp6BHPfrm4RN4nOtH36DRFV21XAe27qe9gdtY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Nguyen Van C\",\r\n  \"email\": \"vanc@example.com\",\r\n  \"phone\": \"0123456789\",\r\n  \"address\": \"123 ABC Street\"\r\n}"
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/customer/customer_detail/356d7c45-a645-4311-9127-e5844e782488",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"customer",
+						"customer_detail",
+						"356d7c45-a645-4311-9127-e5844e782488"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "My Customer",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Search Name Customer",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Test Request API Key Meta Mark",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Test Request API Key Alchemy",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contract",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Create Contract",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU3ODAzZjRhLTRlOWEtNDdiMS04ZDY2LWJjYWEwMDhlYmM5NyIsImVtYWlsIjoibmFtaHV5bmhAZ21haWwuY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzYwNjczNjAwLCJleHAiOjE3NjA3NjAwMDB9.b_i52M8iNgWDY2lfeI5CaZoeAZAGvsuEOU_nLqjm8PY",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "contract_code",
+							"value": "CT-002",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "Hợp đồng thử nghiệm 2",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "contract_value",
+							"value": "1000000",
+							"type": "text"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-10-18",
+							"type": "text"
+						},
+						{
+							"key": "end_date",
+							"value": "2025-10-19",
+							"type": "text"
+						},
+						{
+							"key": "customer_id",
+							"value": "24aec151-49a9-4ced-ab1c-2534263b5895",
+							"type": "text"
+						},
+						{
+							"key": "pdf",
+							"type": "file",
+							"src": "/D:/Project CN/crm_server/uploads/contracts/HuynhQuocNam_CV.pdf"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/contract/",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"contract",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Search Code Contract",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Create SPRequest",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"fullname\": \"Nguyễn Văn P\",\r\n  \"email\": \"vanp@example.com\",\r\n  \"subject\": \"Góp ý giao diện\",\r\n  \"message\": \"Mình thấy giao diện phần Báo cáo còn khó nhìn, mong cải thiện màu sắc và khoảng cách.\",\r\n  \"request_type\": \"feedback\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/api/request/create",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"api",
+						"request",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "baseURL",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
