@@ -1,5 +1,6 @@
 import db from '../models'
 import { v4 } from 'uuid'
+import { Op } from 'sequelize';
 // Create a new customer
 export const createCustomerService = async (fullname, email, phone, address, createdBy) => new Promise(async (resolve, reject) => {
     try {
@@ -9,12 +10,19 @@ export const createCustomerService = async (fullname, email, phone, address, cre
                 msg: 'Fullname and email are required!'
             })
         }
-        const existed = await db.Customer.findOne({ where: { email } });
+        const existed = await db.Customer.findOne({
+            where: {
+                [Op.or]: [
+                    { email },
+                    { phone }
+                ]
+            }
+        });
         if (existed) {
             return resolve({
                 err: 2,
-                msg: 'Email is already in use!'
-            })
+                msg: 'Email or phone is already in use!'
+            });
         }
         const customer = await db.Customer.create({
             id: v4(),
@@ -41,20 +49,20 @@ export const createCustomerService = async (fullname, email, phone, address, cre
 //Delete a customer
 export const deleteCustomerService = async (customerId) => new Promise(async (resolve, reject) => {
     try {
-        if(!customerId){
+        if (!customerId) {
             return resolve({
                 err: 1,
                 msg: 'Missing customer Id'
             })
         }
-        const customer = await db.Customer.findOne({where: {id: customerId}});
-        if(!customer){
+        const customer = await db.Customer.findOne({ where: { id: customerId } });
+        if (!customer) {
             return resolve({
                 err: 2,
                 msg: 'Customer not found'
             })
         }
-        await db.Customer.destroy({where: {id: customerId}});
+        await db.Customer.destroy({ where: { id: customerId } });
         return resolve({
             err: 0,
             msg: 'Delete customer successfully!'
@@ -69,7 +77,7 @@ export const deleteCustomerService = async (customerId) => new Promise(async (re
 //List all customers
 export const listCustomersService = async () => new Promise(async (resolve, reject) => {
     try {
-        const customers = await db.Customer.findAll({order: [['createdAt', 'DESC']]});
+        const customers = await db.Customer.findAll({ order: [['createdAt', 'DESC']] });
         return resolve({
             err: 0,
             msg: 'OK',
@@ -85,14 +93,14 @@ export const listCustomersService = async () => new Promise(async (resolve, reje
 //Customer detail
 export const getCustomerDetailService = async (customerId) => new Promise(async (resolve, reject) => {
     try {
-        if(!customerId){
+        if (!customerId) {
             return resolve({
                 err: 1,
                 msg: 'Missing customer Id'
             })
         }
         const customer = await db.Customer.findByPk(customerId);
-        if(!customer){
+        if (!customer) {
             return resolve({
                 err: 2,
                 msg: 'Customer not found'
@@ -113,13 +121,13 @@ export const getCustomerDetailService = async (customerId) => new Promise(async 
 //Get Customer Of User
 export const getCustomerOfUserService = async (userId) => new Promise(async (resolve, reject) => {
     try {
-        if(!userId){
+        if (!userId) {
             return resolve({
                 err: 1,
                 msg: 'Missing user Id'
             })
         }
-        const customers = await db.Customer.findAll({where: {createdBy: userId}, order: [['createdAt', 'DESC']]});
+        const customers = await db.Customer.findAll({ where: { createdBy: userId }, order: [['createdAt', 'DESC']] });
         return resolve({
             err: 0,
             msg: 'OK',
@@ -132,3 +140,32 @@ export const getCustomerOfUserService = async (userId) => new Promise(async (res
         })
     }
 })
+// Search customers by name
+export const searchCustomerByNameService = async (name) => {
+    try {
+        if (!name) {
+            return {
+                err: 1,
+                msg: 'Missing name to search'
+            };
+        }
+        const customers = await db.Customer.findAll({
+            where: {
+                fullname: { [Op.like]: `%${name}%` }
+            },
+            order: [['createdAt', 'DESC']]
+        });
+        return {
+            err: 0,
+            msg: 'OK',
+            customers
+        };
+    } catch (error) {
+        // Ghi log lỗi chi tiết
+        console.error('Search customer error:', error);
+        return {
+            err: 3,
+            msg: 'Failed to search customers: ' + (error.message || JSON.stringify(error))
+        };
+    }
+};
