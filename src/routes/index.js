@@ -4,7 +4,8 @@ import customerRouters from './customer';
 import contractRouters from './contract';
 import publicRouters from './public';
 import contractBRouters from './contractB';
-import requestRouters from './request.js';
+import requestRouters from './request';
+import publicBRouters from './publicb';
 const initRoutes = (app) => {
     app.use('/api/auth', authRouters)
     app.use('/api/user', userRouters)
@@ -13,6 +14,7 @@ const initRoutes = (app) => {
     app.use('/api/contractB', contractBRouters)
     app.use('/api/request', requestRouters);
     app.use('/api/public', publicRouters)
+    app.use('/api/publicb', publicBRouters)
     return app.use('/', (req, res) => {
         res.send('Server is running');
     })

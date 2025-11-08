@@ -1,9 +1,9 @@
-import jwt from 'jsonwebtoken';
+const jwt = require('jsonwebtoken');
 
 const verifyToken = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization || req.headers.Authorization;
-    const accessToken = authHeader?.split(' ')[1];
+    const accessToken = authHeader && authHeader.split ? authHeader.split(' ')[1] : null;
     if (!accessToken) {
       return res.status(401).json({ err: 1, msg: 'Missing access token' });
     }
@@ -19,8 +19,7 @@ const verifyToken = (req, res, next) => {
         return res.status(401).json({ err: 1, msg: 'Access token invalid or expired' });
       }
 
-      // Expect payload contains at least user id and optionally role
-      // Normalize req.user to an object with id and role to be used consistently
+      // Normalize req.user
       req.user = {
         id: payload.id || payload.userId || payload.sub,
         role: payload.role || payload.userRole || null,
@@ -39,4 +38,4 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-export default verifyToken;
+module.exports = verifyToken;
