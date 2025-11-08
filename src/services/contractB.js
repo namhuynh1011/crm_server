@@ -1,42 +1,82 @@
-// src/services/contractB.js
 const fs = require('fs');
 const crypto = require('crypto');
-const { web3, contract } = require('../../blockchain/blockchain');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const db = require('../models');
-import { v4 } from 'uuid'
 
-const ContractB = db.ContractB; // nếu bạn có model ContractB
+// Đảm bảo module blockchain export { web3, contract }
+const { web3, contract } = require('../../blockchain/blockchain');
 
-const createContract = async ({ title, customerId, userId, filePath }) => {
-  // Đọc file PDF
+const ContractB = db.ContractB || db.Contract; // fallback nếu tên model khác
+
+async function createContract({ title, customerId, userId, filePath }) {
+  if (!filePath || !fs.existsSync(filePath)) {
+    throw new Error('File không tồn tại: ' + filePath);
+  }
+  // Read file buffer
   const fileBuffer = fs.readFileSync(filePath);
 
-  // Tạo hash SHA256
+  // SHA256 hash
   const fileHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
-  // Lấy tài khoản đầu tiên (ganache)
+  // Get accounts from web3
   const accounts = await web3.eth.getAccounts();
+  if (!accounts || accounts.length === 0) {
+    throw new Error('Không có account trong web3 provider');
+  }
   const sender = accounts[0];
 
-  // Ghi hash lên blockchain
-  const tx = await contract.methods.storeContract(fileHash, '').send({
-    from: sender,
-    gas: 300000,
-  });
+  // Prepare and send tx: estimate gas first
+  let receipt;
+  try {
+    const method = contract.methods.storeContract(fileHash, ''); // second param placeholder
+    // estimateGas may return a BigInt or number (depending on provider)
+    const gasEstimateRaw = await method.estimateGas({ from: sender });
 
-  // Lưu kết quả vào DB
-  const newContract = await ContractB.create({
-    id: v4(),
+    // Normalize gasEstimate to Number safely
+    let gasEstimateNumber;
+    if (typeof gasEstimateRaw === 'bigint') {
+      // convert to Number (safe for typical gas sizes)
+      gasEstimateNumber = Number(gasEstimateRaw);
+    } else if (typeof gasEstimateRaw === 'object' && gasEstimateRaw.toNumber) {
+      // maybe a BN (bignumber.js or BN.js)
+      try {
+        gasEstimateNumber = gasEstimateRaw.toNumber();
+      } catch (e) {
+        gasEstimateNumber = Number(String(gasEstimateRaw));
+      }
+    } else {
+      gasEstimateNumber = Number(gasEstimateRaw);
+    }
+
+    const MIN_GAS = 300000;
+    const gasToUse = Math.max(gasEstimateNumber || 0, MIN_GAS);
+
+    // send transaction
+    receipt = await method.send({
+      from: sender,
+      gas: gasToUse,
+    });
+    // receipt is the transaction receipt object in web3
+  } catch (err) {
+    console.error('Blockchain tx error:', err);
+    // bubble up error to caller (controller will cleanup file)
+    throw err;
+  }
+
+  // Save to DB
+  const payload = {
+    id: uuidv4(),
     title,
     customerId,
     userId,
     fileHash,
-    blockchainTx: tx.transactionHash,
+    blockchainTx: receipt.transactionHash || receipt.transactionHash || receipt.txHash || null,
     filePath,
-  });
+  };
 
-  console.log('✅ Hợp đồng mới đã được tạo:', newContract.id);
+  const newContract = await ContractB.create(payload);
   return newContract;
-};
+}
 
 module.exports = { createContract };
