@@ -38,6 +38,10 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      contractIdOnChain: {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
       filePath: {
         type: Sequelize.STRING,
         allowNull: false,

@@ -12,5 +12,5 @@ const upload = multer({ dest: 'uploads/contracts/' });
 // POST /api/contractB/create
 // Flow: verifyToken -> multer upload -> controller
 router.post('/create', verifyToken, upload.single('file'), contractController.createContract);
-
+router.get('/lookup', contractController.lookupContract);
 module.exports = router;

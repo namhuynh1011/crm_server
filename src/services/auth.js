@@ -65,7 +65,16 @@ export const loginService = async (email, password) => new Promise(async (resolv
         if (response.isBlocked) {
             return resolve({ err: 3, msg: 'Your account has been blocked!' });
         }
-        const token = jwt.sign({ id: response.id, email: response.email, role: response.role }, process.env.SECRET_KEY, { expiresIn: '1d' });
+        const token = jwt.sign(
+            {
+                id: response.id,
+                fullName: response.fullName,
+                email: response.email,
+                role: response.role
+            },
+            process.env.SECRET_KEY,
+            { expiresIn: '1d' }
+        );
         resolve({
             err: 0,
             msg: 'Login successfully!',
