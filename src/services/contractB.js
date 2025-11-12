@@ -3,75 +3,41 @@ const crypto = require('crypto');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../models');
+const { web3, storeContractHash, getContractById } = require('../../blockchain/blockchain');
 
-// Đảm bảo module blockchain export { web3, contract }
-const { web3, contract } = require('../../blockchain/blockchain');
+const Customer = db.Customer;
+const ContractB = db.ContractB;
 
-const ContractB = db.ContractB || db.Contract; // fallback nếu tên model khác
-
+// 📦 Tạo mới hợp đồng, lưu file hash, ghi lên blockchain, và lưu DB
 async function createContract({ title, customerId, userId, filePath }) {
   if (!filePath || !fs.existsSync(filePath)) {
     throw new Error('File không tồn tại: ' + filePath);
   }
-  // Read file buffer
-  const fileBuffer = fs.readFileSync(filePath);
 
-  // SHA256 hash
+  // 🔒 Hash nội dung file
+  const fileBuffer = fs.readFileSync(filePath);
   const fileHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
-  // Get accounts from web3
-  const accounts = await web3.eth.getAccounts();
-  if (!accounts || accounts.length === 0) {
-    throw new Error('Không có account trong web3 provider');
-  }
-  const sender = accounts[0];
-
-  // Prepare and send tx: estimate gas first
-  let receipt;
+  // ✅ Ghi lên blockchain
+  let blockchainResult;
   try {
-    const method = contract.methods.storeContract(fileHash, ''); // second param placeholder
-    // estimateGas may return a BigInt or number (depending on provider)
-    const gasEstimateRaw = await method.estimateGas({ from: sender });
-
-    // Normalize gasEstimate to Number safely
-    let gasEstimateNumber;
-    if (typeof gasEstimateRaw === 'bigint') {
-      // convert to Number (safe for typical gas sizes)
-      gasEstimateNumber = Number(gasEstimateRaw);
-    } else if (typeof gasEstimateRaw === 'object' && gasEstimateRaw.toNumber) {
-      // maybe a BN (bignumber.js or BN.js)
-      try {
-        gasEstimateNumber = gasEstimateRaw.toNumber();
-      } catch (e) {
-        gasEstimateNumber = Number(String(gasEstimateRaw));
-      }
-    } else {
-      gasEstimateNumber = Number(gasEstimateRaw);
-    }
-
-    const MIN_GAS = 300000;
-    const gasToUse = Math.max(gasEstimateNumber || 0, MIN_GAS);
-
-    // send transaction
-    receipt = await method.send({
-      from: sender,
-      gas: gasToUse,
-    });
-    // receipt is the transaction receipt object in web3
+    blockchainResult = await storeContractHash(fileHash);
   } catch (err) {
-    console.error('Blockchain tx error:', err);
-    // bubble up error to caller (controller will cleanup file)
-    throw err;
+    console.error('❌ Blockchain tx error:', err);
+    throw new Error('Không thể ghi dữ liệu lên blockchain: ' + err.message);
   }
 
-  // Save to DB
+  const { txHash, contractId } = blockchainResult;
+
+  // 💾 Lưu vào cơ sở dữ liệu
   const payload = {
     id: uuidv4(),
     title,
     customerId,
     userId,
     fileHash,
-    blockchainTx: receipt.transactionHash || receipt.transactionHash || receipt.txHash || null,
+    blockchainTx: txHash,
+    contractIdOnChain: contractId,
     filePath,
   };
 
@@ -79,4 +45,21 @@ async function createContract({ title, customerId, userId, filePath }) {
   return newContract;
 }
 
-module.exports = { createContract };
+const lookupContract = async ({ contractCode, customerEmail }) => {
+  const customer = await Customer.findOne({ where: { email: customerEmail } });
+  if (!customer) throw new Error('Không tìm thấy khách hàng với email này.');
+
+  const contract = await ContractB.findOne({
+    where: { title: contractCode, customerId: customer.id }
+  });
+  if (!contract) throw new Error('Không tìm thấy hợp đồng cho khách hàng này.');
+
+  const onchainData = await getContractById(contract.contractIdOnChain);
+
+  return {
+    contractDB: contract,
+    contractBlockchain: onchainData
+  };
+};
+
+module.exports = { createContract, lookupContract };

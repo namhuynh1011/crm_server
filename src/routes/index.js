@@ -11,7 +11,7 @@ const initRoutes = (app) => {
     app.use('/api/user', userRouters)
     app.use('/api/customer', customerRouters)
     app.use('/api/contract', contractRouters)
-    app.use('/api/contractB', contractBRouters)
+    app.use('/api/contractb', contractBRouters)
     app.use('/api/request', requestRouters);
     app.use('/api/public', publicRouters)
     app.use('/api/publicb', publicBRouters)
