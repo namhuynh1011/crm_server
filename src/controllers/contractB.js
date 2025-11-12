@@ -81,15 +81,12 @@ const lookupContract = async (req, res) => {
   try {
     const { contractCode, customerEmail } = req.query;
 
-    // Validate input
-    if (!contractCode) {
-      return res.status(400).json({ message: 'contractCode is required' });
-    }
-    if (!customerEmail) {
-      return res.status(400).json({ message: 'customerEmail is required' });
+    if (!contractCode || !customerEmail) {
+      return res.status(400).json({
+        message: 'Thiếu tham số contractCode hoặc customerEmail'
+      });
     }
 
-    // Gọi service
     const result = await ContractService.lookupContract({
       contractCode,
       customerEmail
@@ -99,7 +96,6 @@ const lookupContract = async (req, res) => {
       message: '✅ Tra cứu hợp đồng thành công',
       data: result
     });
-
   } catch (error) {
     console.error('❌ Lỗi tra cứu:', error);
     res.status(400).json({ message: error.message });

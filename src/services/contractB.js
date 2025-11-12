@@ -3,63 +3,41 @@ const crypto = require('crypto');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../models');
-const { web3, contract } = require('../../blockchain/blockchain');
-import { getContractById, storeContractHash } from '../../blockchain/blockchain.js';
+const { web3, storeContractHash, getContractById } = require('../../blockchain/blockchain');
+
 const Customer = db.Customer;
 const ContractB = db.ContractB;
 
+// 📦 Tạo mới hợp đồng, lưu file hash, ghi lên blockchain, và lưu DB
 async function createContract({ title, customerId, userId, filePath }) {
   if (!filePath || !fs.existsSync(filePath)) {
     throw new Error('File không tồn tại: ' + filePath);
   }
-  const fileBuffer = fs.readFileSync(filePath);
 
+  // 🔒 Hash nội dung file
+  const fileBuffer = fs.readFileSync(filePath);
   const fileHash = crypto.createHash('sha256').update(fileBuffer).digest('hex');
 
-  const accounts = await web3.eth.getAccounts();
-  if (!accounts || accounts.length === 0) {
-    throw new Error('Không có account trong web3 provider');
-  }
-  const sender = accounts[0];
-
-  let receipt;
+  // ✅ Ghi lên blockchain
+  let blockchainResult;
   try {
-    const method = contract.methods.storeContract(fileHash, '');
-    const gasEstimateRaw = await method.estimateGas({ from: sender });
-
-    let gasEstimateNumber;
-    if (typeof gasEstimateRaw === 'bigint') {
-      gasEstimateNumber = Number(gasEstimateRaw);
-    } else if (typeof gasEstimateRaw === 'object' && gasEstimateRaw.toNumber) {
-      try {
-        gasEstimateNumber = gasEstimateRaw.toNumber();
-      } catch (e) {
-        gasEstimateNumber = Number(String(gasEstimateRaw));
-      }
-    } else {
-      gasEstimateNumber = Number(gasEstimateRaw);
-    }
-
-    const MIN_GAS = 300000;
-    const gasToUse = Math.max(gasEstimateNumber || 0, MIN_GAS);
-
-    receipt = await method.send({
-      from: sender,
-      gas: gasToUse,
-    });
+    blockchainResult = await storeContractHash(fileHash);
   } catch (err) {
-    console.error('Blockchain tx error:', err);
-    throw err;
+    console.error('❌ Blockchain tx error:', err);
+    throw new Error('Không thể ghi dữ liệu lên blockchain: ' + err.message);
   }
-  // const { txHash, contractId } = await storeContractHash(fileHash);
+
+  const { txHash, contractId } = blockchainResult;
+
+  // 💾 Lưu vào cơ sở dữ liệu
   const payload = {
     id: uuidv4(),
     title,
     customerId,
     userId,
     fileHash,
-    blockchainTx: receipt.transactionHash || receipt.transactionHash || receipt.txHash || null,
-    // contractIdOnChain: contractId,
+    blockchainTx: txHash,
+    contractIdOnChain: contractId,
     filePath,
   };
 
@@ -68,28 +46,14 @@ async function createContract({ title, customerId, userId, filePath }) {
 }
 
 const lookupContract = async ({ contractCode, customerEmail }) => {
-  // Tìm customer
-  const customer = await Customer.findOne({
-    where: { email: customerEmail }
-  });
+  const customer = await Customer.findOne({ where: { email: customerEmail } });
+  if (!customer) throw new Error('Không tìm thấy khách hàng với email này.');
 
-  if (!customer) {
-    throw new Error('Không tìm thấy khách hàng với email này.');
-  }
-
-  // Tìm hợp đồng theo mã + customer
   const contract = await ContractB.findOne({
-    where: {
-      title: contractCode,
-      customerId: customer.id
-    }
+    where: { title: contractCode, customerId: customer.id }
   });
+  if (!contract) throw new Error('Không tìm thấy hợp đồng cho khách hàng này.');
 
-  if (!contract) {
-    throw new Error('Không tìm thấy hợp đồng cho khách hàng này.');
-  }
-
-  // Lấy dữ liệu từ blockchain
   const onchainData = await getContractById(contract.contractIdOnChain);
 
   return {
