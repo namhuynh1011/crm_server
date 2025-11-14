@@ -76,10 +76,9 @@ const createContract = async function (req, res) {
 
 
 
-// ====================== LOOKUP CONTRACT ======================
 const lookupContract = async (req, res) => {
   try {
-    const { contractCode, customerEmail } = req.query;
+    const { contractCode, customerEmail } = req.body;
 
     if (!contractCode || !customerEmail) {
       return res.status(400).json({
@@ -104,5 +103,4 @@ const lookupContract = async (req, res) => {
 
 
 
-// ====================== EXPORT ======================
 module.exports = { createContract, lookupContract };

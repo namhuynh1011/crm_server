@@ -3,10 +3,12 @@ const crypto = require('crypto');
 const path = require('path');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../models');
-const { web3, storeContractHash, getContractById } = require('../../blockchain/blockchain');
-
+const {storeContractHash } = require('../../blockchain/blockchain');
+const { lookupOnChainByTx } = require('../services/blockchain');
 const Customer = db.Customer;
 const ContractB = db.ContractB;
+
+
 
 // 📦 Tạo mới hợp đồng, lưu file hash, ghi lên blockchain, và lưu DB
 async function createContract({ title, customerId, userId, filePath }) {
@@ -46,20 +48,29 @@ async function createContract({ title, customerId, userId, filePath }) {
 }
 
 const lookupContract = async ({ contractCode, customerEmail }) => {
+  // 1. Tìm khách hàng
   const customer = await Customer.findOne({ where: { email: customerEmail } });
   if (!customer) throw new Error('Không tìm thấy khách hàng với email này.');
 
+  // 2. Tìm contract trong DB
   const contract = await ContractB.findOne({
     where: { title: contractCode, customerId: customer.id }
   });
   if (!contract) throw new Error('Không tìm thấy hợp đồng cho khách hàng này.');
 
-  const onchainData = await getContractById(contract.contractIdOnChain);
+  if (!contract.blockchainTx) {
+    throw new Error("Hợp đồng này chưa ghi lên blockchain");
+  }
+
+  // 3. Tra cứu on-chain bằng transaction hash
+  const onchainData = await lookupOnChainByTx(contract.blockchainTx);
 
   return {
+    message: "Tra cứu thành công",
     contractDB: contract,
-    contractBlockchain: onchainData
+    blockchain: onchainData
   };
 };
+
 
 module.exports = { createContract, lookupContract };
