@@ -112,17 +112,49 @@ export const changePasswordService = async (userId, password, newPassword) => ne
     }
 })
 
-export const updateUserService = async (userId, { fullName, avatar }) =>new Promise(async (resolve, reject) => {
+export const updateUserService = async (userId, { fullName, avatar }) => new Promise(async (resolve, reject) => {
     try {
-        if(!userId) return resolve({ err: 1, msg: 'User ID is required!' });
+        if (!userId) return resolve({ err: 1, msg: 'User ID is required!' });
         const user = await db.User.findByPk(userId);
         if (!user) return resolve({ err: 1, msg: 'User not found!' });
 
-        if(fullName)user.fullName = fullName;
-        if(avatar)user.avatar = avatar;
+        if (fullName) user.fullName = fullName;
+        if (avatar) user.avatar = avatar;
         await user.save();
-        resolve({ err: 0, msg: 'Update user successfully!', user });
+        resolve({ err: 0, msg: 'Update user successfully!' });
     } catch (error) {
         reject({ err: 1, msg: 'Failed to update user: ' + error });
     }
 });
+
+export async function getUserByIdService(userId) {
+    if (!userId) throw new Error('userId is required');
+
+    const UserModel = db.User;
+    if (!UserModel) throw new Error('User model not found');
+
+    // Chỉ chọn các attribute an toàn để trả về
+    const attrs = ['id', 'fullName', 'email', 'role', 'avatar', 'createdAt', 'updatedAt', 'avatar'];
+
+    const user = await UserModel.findByPk(userId, {
+        attributes: attrs
+    });
+
+    if (!user) return null;
+
+    const userObj = user.toJSON ? user.toJSON() : user;
+
+    // Thêm các trường derived (không sensitive)
+    const shortName = (userObj.fullName || userObj.email || '').split(' ')[0] || '';
+    let permissions = [];
+    const role = (userObj.role || '').toString().toLowerCase();
+
+    if (role === 'manager') permissions = ['create:task', 'assign:task', 'view:reports'];
+    else if (role === 'employee') permissions = ['update:task', 'view:task'];
+    else if (role === 'admin') permissions = ['*'];
+
+    userObj.shortName = shortName;
+    userObj.permissions = permissions;
+
+    return userObj;
+}
