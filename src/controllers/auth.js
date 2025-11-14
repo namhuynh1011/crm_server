@@ -45,9 +45,9 @@ export const changePasswordController = async (req, res) => {
 
 export const updateUserController = async (req, res) => {
     const userId = req.user.id;
-    const { fullname, avatar } = req.body;
+    const { fullName, avatar } = req.body;
     try {
-        const response = await authService.updateUserService(userId, { fullname, avatar });
+        const response = await authService.updateUserService(userId, { fullName, avatar });
         if (response.err) return res.status(400).json(response);
         return res.status(200).json(response);
     } catch (error) {
