@@ -26,7 +26,7 @@ async function storeContractHash(hashValue, ipfsCid = '') {
         gas: 300000
     });
 
-    console.log('🧾 Full transaction receipt:', tx);
+    // console.log('🧾 Full transaction receipt:', tx);
 
     let event = null;
 
@@ -64,8 +64,8 @@ async function storeContractHash(hashValue, ipfsCid = '') {
     }
 
     const contractId = event && event.id ? event.id : null;
-    console.log('✅ Tx hash:', tx.transactionHash);
-    console.log('✅ Contract ID:', contractId);
+    // console.log('✅ Tx hash:', tx.transactionHash);
+    // console.log('✅ Contract ID:', contractId);
 
     return {
         txHash: tx.transactionHash,
