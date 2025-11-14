@@ -54,3 +54,34 @@ export const updateUserController = async (req, res) => {
         return res.status(500).json({ err: -1, msg: 'Failed at userController:' + error });
     }
 };
+
+export const getUserByIdController = async (req, res) => {
+    try {
+        // verifyToken middleware phải set req.user
+        const requester = req.user;
+        if (!requester || !requester.id) {
+            return res.status(401).json({ err: 1, msg: 'Unauthorized: missing token or user info' });
+        }
+
+        // Nếu muốn hỗ trợ admin xem user khác: ?id=<userId>
+        const targetId = req.query.id || requester.id;
+
+        // Optional permission check: only admin can request other user info
+        if (targetId !== requester.id) {
+            const role = (requester.role || '').toString().toLowerCase();
+            if (role !== 'admin') {
+                return res.status(403).json({ err: 1, msg: 'Forbidden: cannot view other user info' });
+            }
+        }
+
+        const userData = await authService.getUserByIdService(targetId);
+        if (!userData) {
+            return res.status(404).json({ err: 2, msg: 'User not found' });
+        }
+
+        return res.json({ err: 0, msg: 'OK', data: userData });
+    } catch (error) {
+        console.error('getCurrentUser error', error);
+        return res.status(500).json({ err: 99, msg: 'Internal error' });
+    }
+};

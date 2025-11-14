@@ -8,4 +8,5 @@ router.post('/register', verifyToken, verifyRole('admin'), authController.regist
 router.post('/login', authController.loginController)
 router.put('/change-password', verifyToken, authController.changePasswordController)
 router.put('/update/profile/', verifyToken, authController.updateUserController);
+router.get('/me', verifyToken, authController.getUserByIdController);
 export default router;
