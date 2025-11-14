@@ -111,3 +111,18 @@ export const changePasswordService = async (userId, password, newPassword) => ne
         reject(error);
     }
 })
+
+export const updateUserService = async (userId, { fullname, avatar }) =>new Promise(async (resolve, reject) => {
+    try {
+        if(!userId) return resolve({ err: 1, msg: 'User ID is required!' });
+        const user = await db.User.findByPk(userId);
+        if (!user) return resolve({ err: 1, msg: 'User not found!' });
+
+        if(fullname)user.fullname = fullname;
+        if(avatar)user.avatar = avatar;
+        await user.save();
+        resolve({ err: 0, msg: 'Update user successfully!', user });
+    } catch (error) {
+        reject({ err: 1, msg: 'Failed to update user: ' + error });
+    }
+});
