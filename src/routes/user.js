@@ -9,5 +9,4 @@ router.get('/get/:id', verifyToken, verifyRole('admin'), userController.getUserB
 router.delete('/delete/:id', verifyToken, verifyRole('admin'), userController.deleteUserController);
 router.put('/block/:id', verifyToken, verifyRole('admin'), userController.blockUserController);
 router.post('/create', verifyToken, verifyRole('admin'), userController.createUserController);
-router.put('/update/profile/', verifyToken, userController.updateUserController);
 export default router;

@@ -7,5 +7,5 @@ const router = express.Router();
 router.post('/register', verifyToken, verifyRole('admin'), authController.registerController)
 router.post('/login', authController.loginController)
 router.put('/change-password', verifyToken, authController.changePasswordController)
-
+router.put('/update/profile/', verifyToken, authController.updateUserController);
 export default router;
