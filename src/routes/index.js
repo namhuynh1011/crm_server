@@ -18,7 +18,7 @@ const initRoutes = (app) => {
     app.use('/api/publicb', publicBRouters)
     app.use('/api/task', taskRouters);
     return app.use('/', (req, res) => {
-        res.send('Server is running');
+        res.send(`Server is running. You requested: ${req.originalUrl} with method ${req.method}`);
     })
 }
 

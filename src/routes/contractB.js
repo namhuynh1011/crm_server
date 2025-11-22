@@ -4,7 +4,7 @@ const multer = require('multer');
 const contractController = require('../controllers/contractB');
 
 // Import verifyToken middleware (đảm bảo middleware export đúng CommonJS)
-const verifyToken = require('../middlewares/verifyToken');
+import verifyToken from '../middlewares/verifyToken';
 
 // upload config: bạn có thể cấu hình storage, limit, fileFilter...
 const upload = multer({ dest: 'uploads/contracts/' });
