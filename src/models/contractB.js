@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
     }
     ContractB.init({
         title: DataTypes.STRING,
+        startDate: DataTypes.DATE,
+        endDate: DataTypes.DATE,
+        contractValue: DataTypes.DECIMAL(15, 2),
         customerId: DataTypes.UUID,
         userId: DataTypes.UUID,
         fileHash: DataTypes.STRING,
