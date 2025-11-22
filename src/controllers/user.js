@@ -49,12 +49,24 @@ export const blockUserController = async (req, res) => {
 };
 
 export const createUserController = async (req, res) => {
-    const {fullname, email, password, role} = req.body;
+    const {fullName, email, password, role} = req.body;
     try {
-        const response = await userService.createUserService({fullname, email, password, role});
+        const response = await userService.createUserService({fullName, email, password, role});
         if (response.err) return res.status(400).json(response);
         return res.status(201).json(response);
     } catch (error) {
         return res.status(500).json({ err: -1, msg: 'Failed at userController:' + error });
     }
 };
+
+export const updateUserRoleController = async (req, res) => {
+    const userId = req.params.id;
+    const { role } = req.body;
+    try {
+        const response = await userService.updateUserRoleService(userId, role);
+        if (response.err) return res.status(400).json(response);
+        return res.status(200).json(response);
+    } catch (error) {
+        return res.status(500).json({ err: -1, msg: 'Failed at userController:' + error });
+    }
+}

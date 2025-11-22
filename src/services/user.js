@@ -56,17 +56,18 @@ export const blockUserService = async (id, status) => {
     }
 };
 
-export const createUserService = async ({fullname, email, password, role}) =>new Promise(async (resolve, reject) => {
+export const createUserService = async ({fullName, email, password, role}) =>new Promise(async (resolve, reject) => {
     try {
         if(!email){
             return resolve({err: 1, msg: 'Email is required!'})
         }
         const userData = {
             id: v4(),
-            fullname,
+            fullName,
             email,
             password: hashPassword(password),
             role,
+            isBlocked: false
         };
         const [user, created] = await db.User.findOrCreate({
             where: { email },
@@ -84,6 +85,18 @@ export const createUserService = async ({fullname, email, password, role}) =>new
         }
     } catch (error) {
         return resolve({ err: 1, msg: 'Failed to create user: ' + error });
+    }
+})
+
+export const updateUserRoleService = async (id, role) => new Promise(async (resolve, reject) => {
+    try {
+        const user = await db.User.findByPk(id);
+        if (!user) return resolve({ err: 1, msg: 'User not found!' });
+        user.role = role;
+        await user.save();
+        return resolve({ err: 0, msg: 'User role updated successfully!' });
+    } catch (error) {
+        return resolve({ err: 1, msg: 'Failed to update user role: ' + error });
     }
 })
 
