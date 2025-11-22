@@ -165,3 +165,41 @@ export async function assignRequestToEmployeeService(payload = {}) {
         throw { err: 99, msg: 'Lỗi hệ thống' };
     }
 }
+
+export async function getAllRequestsService() {
+    try {
+        const requests = await db.SupportRequest.findAll();
+        return {
+            err: 0,
+            msg: 'Get all requests successfully!',
+            data: requests
+        };
+    } catch (error) {
+        return {
+            err: 1,
+            msg: 'Failed to get all requests: ' + error
+        };
+    }
+}
+
+export async function getRequestByIdService(requestId) {
+    try {
+        const request = await db.SupportRequest.findOne({ where: { id: requestId } });
+        if (!request) {
+            return {
+                err: 1,
+                msg: 'Request not found'
+            };
+        }
+        return {
+            err: 0,
+            msg: 'Get request successfully!',
+            data: request
+        };
+    } catch (error) {
+        return {
+            err: 1,
+            msg: 'Failed to get request: ' + error
+        };
+    }
+}

@@ -11,5 +11,7 @@ router.post(
     verifyRole('manager'),
     RequestController.assignRequestToEmployeeController
 );
+router.get('/getall', verifiToken, RequestController.getRequestsAllController);
+router.get('/get/:id', verifiToken, RequestController.getRequestByIdController);
 
 export default router;
