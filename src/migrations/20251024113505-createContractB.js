@@ -1,5 +1,7 @@
 'use strict';
 
+const { contract } = require('../../blockchain/blockchain');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -12,6 +14,18 @@ module.exports = {
       },
       title: {
         type: Sequelize.STRING,
+        allowNull: false,
+      },
+      startDate: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      endDate: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      contractValue: {
+        type: Sequelize.DECIMAL(15, 2),
         allowNull: false,
       },
       customerId: {
