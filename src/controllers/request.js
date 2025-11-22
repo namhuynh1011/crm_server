@@ -36,3 +36,25 @@ export const assignRequestToEmployeeController = async (req, res) => {
         return res.status(500).json({ err: 99, msg: 'Internal server error' });
     }
 };
+
+export const getRequestsAllController = async (req, res) => {
+    try {
+        const result = await requestService.getAllRequestsService();
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
+
+export const getRequestByIdController = async (req, res) => {
+    try {
+        const requestId = req.params.id;
+        const result = await requestService.getRequestByIdService(requestId);
+        if (result.err) {
+            return res.status(404).json(result);
+        }
+        return res.status(200).json(result);
+    } catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+};
